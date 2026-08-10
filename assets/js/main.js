@@ -380,12 +380,12 @@
               }),
             });
 
-            const result = await response.json();
-            if (!response.ok || !result.success) {
-              throw new Error(result.message || 'Unable to register at this time.');
+            if (response.ok) {
+              const result = await response.json();
+              if (result.success) {
+                customerId = result.data?.id || result.data?.customerId || customerId;
+              }
             }
-
-            customerId = result.data?.id || result.data?.customerId || customerId;
 
             const { data: updatedUser, error: updateError } = await SUPABASE_CLIENT.auth.updateUser({
               data: {
@@ -407,8 +407,11 @@
               });
             }
           } catch (customerError) {
-            setStoredAuth(signedUpUser);
-            console.error('Customer provisioning failed:', customerError);
+            console.warn('Customer provisioning skipped:', customerError);
+            setStoredAuth({
+              ...signedUpUser,
+              customerId,
+            });
           }
 
           window.location.replace('index.html');
