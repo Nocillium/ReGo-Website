@@ -100,44 +100,83 @@
     if (errorEl) errorEl.remove();
   }
 
-  const AUTH_SESSION_KEY = 'regoAuth';
-  const AUTH_REGISTER_KEY = 'regoUser';
+  const SUPABASE_CLIENT = window.supabase && SITE_CONFIG.supabaseUrl && SITE_CONFIG.supabaseAnonKey
+    ? window.supabase.createClient(SITE_CONFIG.supabaseUrl, SITE_CONFIG.supabaseAnonKey)
+    : null;
 
-  function getStoredAuth() {
-    try {
-      return JSON.parse(localStorage.getItem(AUTH_SESSION_KEY) || 'null');
-    } catch {
+  let currentAuthUser = null;
+  let authStateLoaded = false;
+  let authStatePromise = null;
+
+  function mapSupabaseUser(user) {
+    if (!user) {
       return null;
     }
+
+    const metadata = user.user_metadata || {};
+    const firstName = metadata.first_name || '';
+    const lastName = metadata.last_name || '';
+    const name = metadata.name || [firstName, lastName].filter(Boolean).join(' ').trim();
+
+    return {
+      id: user.id,
+      email: user.email || '',
+      name,
+      firstName,
+      lastName,
+      phone: metadata.phone || user.phone || null,
+      companyName: metadata.company_name || '',
+      customerId: metadata.customer_id || metadata.shopmonkey_customer_id || null,
+    };
   }
 
-  function getStoredUser() {
-    try {
-      return JSON.parse(localStorage.getItem(AUTH_REGISTER_KEY) || 'null');
-    } catch {
-      return null;
-    }
+  function getStoredAuth() {
+    return currentAuthUser;
   }
 
   function setStoredAuth(user) {
-    const value = {
-      email: user.email,
-      name: user.name,
-      phone: user.phone || null,
-      customerId: user.customerId || null,
-      token: `rego-${Date.now()}`,
-      createdAt: new Date().toISOString(),
-    };
-    localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(value));
-    return value;
+    currentAuthUser = user ? { ...user } : null;
+    authStateLoaded = true;
+    authStatePromise = Promise.resolve(currentAuthUser);
+    return currentAuthUser;
   }
 
-  function setStoredUser(user) {
-    localStorage.setItem(AUTH_REGISTER_KEY, JSON.stringify(user));
+  async function clearAuth() {
+    currentAuthUser = null;
+    authStateLoaded = false;
+    authStatePromise = null;
+
+    if (SUPABASE_CLIENT) {
+      await SUPABASE_CLIENT.auth.signOut();
+    }
   }
 
-  function clearAuth() {
-    localStorage.removeItem(AUTH_SESSION_KEY);
+  async function loadAuthState() {
+    if (authStateLoaded) {
+      return currentAuthUser;
+    }
+
+    if (!SUPABASE_CLIENT) {
+      authStateLoaded = true;
+      currentAuthUser = null;
+      return currentAuthUser;
+    }
+
+    if (!authStatePromise) {
+      authStatePromise = (async () => {
+        const { data, error } = await SUPABASE_CLIENT.auth.getSession();
+        if (error) {
+          console.error('Supabase session error:', error);
+          currentAuthUser = null;
+        } else {
+          currentAuthUser = mapSupabaseUser(data.session?.user || null);
+        }
+        authStateLoaded = true;
+        return currentAuthUser;
+      })();
+    }
+
+    return authStatePromise;
   }
 
   function isAuthPage() {
@@ -194,7 +233,7 @@
     }
   }
 
-  function initializeAuthPages() {
+  async function initializeAuthPages() {
     redirectIfAuthenticated();
 
     const loginForm = document.getElementById('login-form');
@@ -205,25 +244,32 @@
         const passwordInput = loginForm.querySelector('[name="password"]');
         const email = emailInput.value.trim();
         const password = passwordInput.value.trim();
-        const registered = getStoredUser();
+        const formError = loginForm.querySelector('.form__error');
 
         if (!email || !password) {
           showFieldError(!email ? emailInput : passwordInput, 'Please enter both email and password.');
           return;
         }
 
-        if (!registered || registered.email !== email) {
-          showFieldError(emailInput, 'No account found. Please sign up first.');
+        if (!SUPABASE_CLIENT) {
+          if (formError) {
+            formError.textContent = 'Supabase auth is not configured yet. Add your project URL and anon key in site.config.js.';
+            formError.classList.add('is-visible');
+          }
           return;
         }
 
-        if (registered.passwordHash !== btoa(password)) {
-          showFieldError(passwordInput, 'Email or password is incorrect.');
-          return;
-        }
+        try {
+          const { data, error } = await SUPABASE_CLIENT.auth.signInWithPassword({ email, password });
+          if (error) {
+            throw error;
+          }
 
-        setStoredAuth(registered);
-        window.location.replace('index.html');
+          setStoredAuth(mapSupabaseUser(data.user));
+          window.location.replace('index.html');
+        } catch (error) {
+          showFieldError(passwordInput, error.message || 'Email or password is incorrect.');
+        }
       });
     }
 
@@ -279,14 +325,6 @@
           formError.classList.remove('is-visible');
         }
 
-        const requestBody = {
-          firstName,
-          lastName,
-          email,
-          phone,
-          companyName,
-        };
-
         const submitButton = signupForm.querySelector('button[type="submit"]');
         if (submitButton) {
           submitButton.disabled = true;
@@ -294,30 +332,85 @@
         }
 
         try {
-          const response = await fetch('/api/customer', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody),
-          });
-
-          const result = await response.json();
-          if (!response.ok || !result.success) {
-            throw new Error(result.message || 'Unable to register at this time.');
+          if (!SUPABASE_CLIENT) {
+            throw new Error('Supabase auth is not configured yet. Add your project URL and anon key in site.config.js.');
           }
 
-          const user = {
+          const { data, error } = await SUPABASE_CLIENT.auth.signUp({
             email,
-            name: `${firstName} ${lastName}`,
-            phone,
-            customerId: result.data?.id || result.data?.customerId || null,
-            companyName,
-            passwordHash: btoa(password),
-          };
+            password,
+            options: {
+              data: {
+                first_name: firstName,
+                last_name: lastName,
+                phone,
+                company_name: companyName,
+              },
+            },
+          });
 
-          setStoredUser(user);
-          setStoredAuth(user);
+          if (error) {
+            throw error;
+          }
+
+          const signedUpUser = mapSupabaseUser(data.user);
+
+          if (!data.session) {
+            if (formError) {
+              formError.textContent = 'Account created. Check your email to confirm your signup before logging in.';
+              formError.classList.add('is-visible');
+            }
+            return;
+          }
+
+          let customerId = signedUpUser.customerId;
+
+          try {
+            const response = await fetch('/api/customer', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                firstName,
+                lastName,
+                email,
+                phone,
+                companyName,
+              }),
+            });
+
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+              throw new Error(result.message || 'Unable to register at this time.');
+            }
+
+            customerId = result.data?.id || result.data?.customerId || customerId;
+
+            const { data: updatedUser, error: updateError } = await SUPABASE_CLIENT.auth.updateUser({
+              data: {
+                first_name: firstName,
+                last_name: lastName,
+                phone,
+                company_name: companyName,
+                customer_id: customerId,
+                shopmonkey_customer_id: customerId,
+              },
+            });
+
+            if (!updateError && updatedUser?.user) {
+              setStoredAuth(mapSupabaseUser(updatedUser.user));
+            } else {
+              setStoredAuth({
+                ...signedUpUser,
+                customerId,
+              });
+            }
+          } catch (customerError) {
+            setStoredAuth(signedUpUser);
+            console.error('Customer provisioning failed:', customerError);
+          }
+
           window.location.replace('index.html');
         } catch (error) {
           if (formError) {
@@ -492,14 +585,20 @@
     });
   }
 
-  const appointmentForm = document.getElementById('appointment-form');
-  if (appointmentForm) {
-    prefillAppointmentForm();
-    handleFormSubmit(appointmentForm);
+  async function bootstrapAuth() {
+    await loadAuthState();
+
+    const appointmentForm = document.getElementById('appointment-form');
+    if (appointmentForm) {
+      prefillAppointmentForm();
+      handleFormSubmit(appointmentForm);
+    }
+
+    await initializeAuthPages();
+    ensureProtectedPage();
   }
 
-  initializeAuthPages();
-  ensureProtectedPage();
+  bootstrapAuth();
 
   /* Cookie Consent */
   const cookieBanner = document.querySelector('.cookie-banner');

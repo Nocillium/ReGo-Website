@@ -30,6 +30,7 @@
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
   <script src="site.config.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 
   <!-- Local Business Schema -->
   <script type="application/ld+json">
@@ -68,13 +69,6 @@
   </script>
 </head>
 <body>
-  <script>
-    const authToken = localStorage.getItem('regoAuth');
-    const isIndex = window.location.pathname === '/' || window.location.pathname.endsWith('/index.html');
-    if (!authToken && isIndex) {
-      window.location.replace('login.html');
-    }
-  </script>
   <a href="#main" class="skip-link">Skip to main content</a>
 
   <!-- Header -->
