@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="iGo ReGo offers expert auto repair in your area. Certified technicians, honest pricing, and fast turnaround. Book your appointment online today.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://www.igorego.com/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="iGo ReGo | Auto Repair & Service — Book Online">
+  <meta property="og:description" content="Certified technicians, honest pricing, and fast turnaround. Schedule your appointment online in minutes.">
+  <meta property="og:url" content="https://www.igorego.com/">
+  <meta property="og:image" content="https://www.igorego.com/assets/images/og-image.jpg">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="iGo ReGo">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="iGo ReGo | Auto Repair & Service — Book Online">
+  <meta name="twitter:description" content="Certified technicians, honest pricing, and fast turnaround. Schedule your appointment online in minutes.">
+  <meta name="twitter:image" content="https://www.igorego.com/assets/images/og-image.jpg">
+
+  <title>iGo ReGo | Auto Repair & Service — Book Online</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <script src="site.config.js" defer></script>
+
+  <!-- Local Business Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "AutoRepair",
+    "name": "iGo ReGo",
+    "image": "https://www.igorego.com/assets/images/og-image.jpg",
+    "url": "https://www.igorego.com",
+    "telephone": "+1-555-123-4567",
+    "email": "service@igorego.com",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "123 Auto Service Drive",
+      "addressLocality": "Your City",
+      "addressRegion": "ST",
+      "postalCode": "12345",
+      "addressCountry": "US"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "40.740766",
+      "longitude": "-74.004259"
+    },
+    "openingHoursSpecification": [
+      {"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "07:30", "closes": "18:00"},
+      {"@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "08:00", "closes": "14:00"}
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "150"
+    },
+    "priceRange": "$$"
+  }
+  </script>
+</head>
+<body>
+  <script>
+    const authToken = localStorage.getItem('regoAuth');
+    const isIndex = window.location.pathname === '/' || window.location.pathname.endsWith('/index.html');
+    if (!authToken && isIndex) {
+      window.location.replace('login.html');
+    }
+  </script>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container header__inner">
+      <a href="index.html" class="logo" aria-label="iGo ReGo Home">
+        <img src="assets/images/logo.svg" alt="iGo ReGo logo" class="logo__icon">
+        <span class="logo__text">iGo <span class="logo__accent">ReGo</span></span>
+      </a>
+
+      <nav class="nav" aria-label="Main navigation">
+        <ul class="nav__list">
+          <li><a href="index.html" class="nav__link nav__link--active">Home</a></li>
+          <li><a href="index.html#services" class="nav__link">Services</a></li>
+          <li><a href="fleet-services.html" class="nav__link">Fleet Services</a></li>
+          <li><a href="contact.html" class="nav__link">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="header__actions">
+        <a href="tel:+15551234567" class="header__phone" data-track="phone" aria-label="Call iGo ReGo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          (555) 123-4567
+        </a>
+        <a href="appointment.html" class="btn btn--primary btn--sm" data-track="book">Book Appointment</a>
+      </div>
+
+      <button class="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Nav -->
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile navigation">
+    <ul class="mobile-nav__list">
+      <li><a href="index.html" class="mobile-nav__link mobile-nav__link--active">Home</a></li>
+      <li><a href="index.html#services" class="mobile-nav__link">Services</a></li>
+      <li><a href="fleet-services.html" class="mobile-nav__link">Fleet Services</a></li>
+      <li><a href="contact.html" class="mobile-nav__link">Contact</a></li>
+    </ul>
+    <div class="mobile-nav__actions">
+      <a href="appointment.html" class="btn btn--primary" data-track="book">Book Appointment</a>
+      <a href="tel:+15551234567" class="btn btn--secondary" data-track="phone">Call (555) 123-4567</a>
+    </div>
+  </nav>
+
+  <main id="main">
+
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero__bg">
+        <img src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1920&q=80&auto=format&fit=crop" alt="Professional automotive technicians working in a modern repair shop" width="1920" height="1080" fetchpriority="high">
+        <div class="hero__overlay"></div>
+      </div>
+      <div class="container hero__content">
+        <div class="hero__badge">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          4.9 on Google — 150+ Reviews
+        </div>
+        <h1 id="hero-title" class="hero__title">Expert Auto Repair You Can Trust — Book Online in Minutes</h1>
+        <p class="hero__subtitle">Certified technicians, honest pricing, and fast turnaround for every make and model. Schedule your appointment today at iGo ReGo.</p>
+        <div class="hero__actions">
+          <a href="appointment.html" class="btn btn--primary btn--lg" data-track="book">Book an Appointment</a>
+          <a href="tel:+15551234567" class="btn btn--secondary btn--lg" data-track="phone">Call Now</a>
+        </div>
+        <div class="hero__trust">
+          <span class="hero__trust-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Certified Technicians
+          </span>
+          <span class="hero__trust-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Honest Pricing
+          </span>
+          <span class="hero__trust-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Same-Day Service
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Choose iGo ReGo -->
+    <section class="section section--alt" aria-labelledby="why-title">
+      <div class="container">
+        <div class="section__header">
+          <span class="section__label">Why Choose Us</span>
+          <h2 id="why-title" class="section__title">Why Choose iGo ReGo</h2>
+          <p class="section__subtitle">We combine expert craftsmanship with transparent service — so you always know what to expect.</p>
+        </div>
+        <div class="benefits-grid">
+          <article class="benefit-card">
+            <div class="benefit-card__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3 class="benefit-card__title">Certified Technicians</h3>
+            <p class="benefit-card__text">ASE-certified and factory-trained professionals who diagnose and repair your vehicle right the first time.</p>
+          </article>
+          <article class="benefit-card">
+            <div class="benefit-card__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            </div>
+            <h3 class="benefit-card__title">Honest Pricing</h3>
+            <p class="benefit-card__text">Transparent estimates with no surprises — we explain every recommendation before any work begins.</p>
+          </article>
+          <article class="benefit-card">
+            <div class="benefit-card__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <h3 class="benefit-card__title">Fast Turnaround</h3>
+            <p class="benefit-card__text">Efficient service without cutting corners. Most routine services completed same day.</p>
+          </article>
+          <article class="benefit-card">
+            <div class="benefit-card__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+            </div>
+            <h3 class="benefit-card__title">High-Quality Workmanship</h3>
+            <p class="benefit-card__text">Parts sourcing and quality repairs built to last mile after mile.</p>
+          </article>
+          <article class="benefit-card">
+            <div class="benefit-card__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            </div>
+            <h3 class="benefit-card__title">Warranty-Backed Repairs</h3>
+            <p class="benefit-card__text">Confidence in every job with warranty coverage on qualifying services and parts.</p>
+          </article>
+          <article class="benefit-card">
+            <div class="benefit-card__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+            <h3 class="benefit-card__title">Excellent Customer Service</h3>
+            <p class="benefit-card__text">Friendly, clear communication from drop-off to pickup. Your satisfaction is our priority.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Overview -->
+    <section class="section" id="services" aria-labelledby="services-title">
+      <div class="container">
+        <div class="section__header">
+          <span class="section__label">Our Services</span>
+          <h2 id="services-title" class="section__title">Complete Auto Care Under One Roof</h2>
+          <p class="section__subtitle">From routine maintenance to complex repairs, we keep your vehicle running at its best.</p>
+        </div>
+        <div class="services-grid">
+          <article class="service-card">
+            <div class="service-card__icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+            </div>
+            <h3 class="service-card__title">Mechanical Repair</h3>
+            <p class="service-card__text"><strong>Complete automotive repair for every major system.</strong> Whether it's routine maintenance or major engine, transmission, suspension, steering, or brake repairs, our technicians keep your vehicle operating safely and reliably.</p>
+            <a href="contact.html" class="service-card__link" data-track="book">Learn More <span aria-hidden="true">→</span></a>
+          </article>
+          <article class="service-card">
+            <div class="service-card__icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 8h8v8H8z"/></svg>
+            </div>
+            <h3 class="service-card__title">ADAS Calibration &amp; Advanced Technology</h3>
+            <p class="service-card__text"><strong>Precision calibration for today's safety systems.</strong> We calibrate cameras, sensors, and Advanced Driver Assistance Systems (ADAS) to manufacturer specifications after repairs or windshield replacement.</p>
+            <a href="contact.html" class="service-card__link" data-track="book">Learn More <span aria-hidden="true">→</span></a>
+          </article>
+          <article class="service-card">
+            <div class="service-card__icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l7 4v5c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V7l7-4z"/><path d="M9 12l2 2 4-4"/></svg>
+            </div>
+            <h3 class="service-card__title">Collision Support &amp; Vehicle Restoration</h3>
+            <p class="service-card__text"><strong>From cosmetic repairs to finishing touches.</strong> We provide minor body repairs, paint correction, and detailing services to help restore your vehicle's appearance after damage or wear.</p>
+            <a href="contact.html" class="service-card__link" data-track="book">Learn More <span aria-hidden="true">→</span></a>
+          </article>
+          <article class="service-card">
+            <div class="service-card__icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h18M7 3v4M17 3v4M5 7v10a2 2 0 002 2h10a2 2 0 002-2V7"/><path d="M9 12h6"/></svg>
+            </div>
+            <h3 class="service-card__title">Fleet &amp; Commercial Services</h3>
+            <p class="service-card__text"><strong>Keeping businesses on the road.</strong> We partner with businesses and fleet operators to provide dependable maintenance, repairs, inspections, and service management that minimize downtime.</p>
+            <a href="contact.html" class="service-card__link" data-track="book">Learn More <span aria-hidden="true">→</span></a>
+          </article>
+          <article class="service-card">
+            <div class="service-card__icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <h3 class="service-card__title">Reconditioning &amp; Specialty Services</h3>
+            <p class="service-card__text"><strong>Automotive expertise beyond the average repair shop.</strong> With years of experience reconditioning thousands of vehicles, we provide comprehensive inspections, specialty repairs, key programming, and vehicle preparation services trusted by dealerships and retail customers alike.</p>
+            <a href="contact.html" class="service-card__link" data-track="book">Learn More <span aria-hidden="true">→</span></a>
+          </article>
+        </div>
+        <div class="services-cta">
+          <a href="appointment.html" class="btn btn--primary btn--lg" data-track="book">Book Your Service Today</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Customer Reviews -->
+    <section class="section section--alt" id="reviews" aria-labelledby="reviews-title">
+      <div class="container">
+        <div class="section__header">
+          <span class="section__label">Testimonials</span>
+          <h2 id="reviews-title" class="section__title">What Our Customers Say</h2>
+        </div>
+        <div class="reviews-summary">
+          <div class="reviews-summary__stars" aria-label="4.9 out of 5 stars">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <div class="reviews-summary__rating">4.9</div>
+          <p class="reviews-summary__count">Based on 150+ Google reviews</p>
+        </div>
+        <div class="reviews-grid">
+          <blockquote class="review-card">
+            <div class="review-card__stars" aria-label="5 stars">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <p class="review-card__text">"Best auto shop in town. They explained everything clearly, gave me a fair price, and had my car ready the same day. Highly recommend iGo ReGo!"</p>
+            <footer>
+              <cite class="review-card__author">Michael R.</cite>
+              <p class="review-card__meta">Google Review</p>
+            </footer>
+          </blockquote>
+          <blockquote class="review-card">
+            <div class="review-card__stars" aria-label="5 stars">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <p class="review-card__text">"I've been bringing our family vehicles here for years. Honest, reliable, and they never try to upsell unnecessary work. True professionals."</p>
+            <footer>
+              <cite class="review-card__author">Sarah &amp; James T.</cite>
+              <p class="review-card__meta">Google Review</p>
+            </footer>
+          </blockquote>
+          <blockquote class="review-card">
+            <div class="review-card__stars" aria-label="5 stars">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <p class="review-card__text">"We manage a fleet of 12 delivery vans. iGo ReGo keeps us on the road with priority scheduling and detailed maintenance reports. Couldn't ask for better partners."</p>
+            <footer>
+              <cite class="review-card__author">David K., Fleet Manager</cite>
+              <p class="review-card__meta">Google Review</p>
+            </footer>
+          </blockquote>
+        </div>
+        <div class="reviews-cta">
+          <a href="https://g.page/r/your-google-business/review" class="btn btn--outline-dark" target="_blank" rel="noopener noreferrer">Read All Reviews on Google</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Fleet Services Preview -->
+    <section class="section" aria-labelledby="fleet-title">
+      <div class="container fleet-preview">
+        <div class="fleet-preview__image">
+          <img src="assets/images/commercial-services.svg" alt="Commercial fleet vehicles ready for maintenance" width="800" height="480" loading="lazy">
+        </div>
+        <div>
+          <span class="section__label">Commercial Services</span>
+          <h2 id="fleet-title" class="section__title">Fleet Services for Businesses That Can't Afford Downtime</h2>
+          <p class="section__subtitle">Keep your commercial vehicles on the road with preventive maintenance, priority scheduling, and custom fleet plans tailored to your operation.</p>
+          <ul class="fleet-preview__list">
+            <li>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              Preventive maintenance programs to reduce unexpected breakdowns
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              Priority scheduling for fleet accounts
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              Custom maintenance plans and detailed service reporting
+            </li>
+          </ul>
+          <div class="fleet-preview__actions">
+            <a href="fleet-services.html" class="btn btn--primary">Learn More</a>
+            <a href="fleet-services.html#fleet-form" class="btn btn--outline-dark">Book Fleet Consultation</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Service Area -->
+    <section class="section section--alt" id="service-area" aria-labelledby="area-title">
+      <div class="container">
+        <div class="section__header">
+          <span class="section__label">Location</span>
+          <h2 id="area-title" class="section__title">Proudly Serving Your City and Surrounding Communities</h2>
+          <p class="section__subtitle">123 Auto Service Drive, Your City, ST 12345</p>
+        </div>
+        <div class="service-area">
+          <div>
+            <p>We proudly serve vehicle owners and fleet operators throughout the region. Whether you need a quick oil change or comprehensive fleet maintenance, iGo ReGo is your trusted local partner.</p>
+            <div class="service-area__locations">
+              <span class="location-tag">Your City</span>
+              <span class="location-tag">Northside</span>
+              <span class="location-tag">Southside</span>
+              <span class="location-tag">East Valley</span>
+              <span class="location-tag">West Hills</span>
+              <span class="location-tag">Metro County</span>
+            </div>
+            <a href="https://maps.google.com/?q=123+Auto+Service+Drive+Your+City+ST" class="btn btn--secondary" style="margin-top:1.5rem;" data-track="directions" target="_blank" rel="noopener noreferrer">Get Directions</a>
+          </div>
+          <div class="service-area__map" data-lazy-map="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.966471254!2d-74.00425878459418!3d40.74076697932881!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDQ0JzI2LjgiTiA3NMKwMDAnMTUuMyJX!5e0!3m2!1sen!2sus!4v1234567890" aria-label="Map showing iGo ReGo location"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact CTA -->
+    <section class="section cta-banner" aria-labelledby="cta-title">
+      <div class="container">
+        <h2 id="cta-title" class="cta-banner__title">Ready to Get Back on the Road?</h2>
+        <p class="cta-banner__text">Call, book online, or send us a message — we're ready to help. Mon–Fri 7:30 AM – 6:00 PM, Sat 8:00 AM – 2:00 PM.</p>
+        <div class="cta-banner__actions">
+          <a href="tel:+15551234567" class="btn btn--outline btn--lg" data-track="phone">Call (555) 123-4567</a>
+          <a href="appointment.html" class="btn btn--primary btn--lg" data-track="book">Book Online</a>
+          <a href="contact.html" class="btn btn--outline btn--lg">Contact Us</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <a href="index.html" class="logo">
+            <img src="assets/images/logo.svg" alt="iGo ReGo logo" class="logo__icon">
+            <span class="logo__text">iGo <span class="logo__accent">ReGo</span></span>
+          </a>
+          <p class="footer__tagline">Expert auto repair with honest pricing and fast turnaround. Your trusted local automotive service partner.</p>
+          <div class="footer__social">
+            <a href="https://facebook.com/igorego" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+            </a>
+            <a href="https://instagram.com/igorego" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+            <a href="https://linkedin.com/company/igorego" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+            </a>
+          </div>
+        </div>
+        <div>
+          <h3 class="footer__heading">Services</h3>
+          <ul class="footer__links">
+            <li><a href="index.html#services">All Services</a></li>
+            <li><a href="fleet-services.html">Fleet Services</a></li>
+            <li><a href="appointment.html" data-track="book">Book Online</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer__heading">Company</h3>
+          <ul class="footer__links">
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="index.html#reviews">Reviews</a></li>
+            <li><a href="index.html#service-area">Service Area</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer__heading">Contact</h3>
+          <div class="footer__contact-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>123 Auto Service Drive<br>Your City, ST 12345</span>
+          </div>
+          <div class="footer__contact-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            <a href="tel:+15551234567" data-track="phone">(555) 123-4567</a>
+          </div>
+          <div class="footer__contact-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <a href="mailto:service@igorego.com">service@igorego.com</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; 2026 iGo ReGo. All rights reserved.</p>
+        <div class="footer__bottom-links">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="cookie-banner" role="dialog" aria-label="Cookie consent">
+    <div class="cookie-banner__inner">
+      <p class="cookie-banner__text">We use cookies to improve your experience and analyze site traffic. By clicking Accept, you agree to our <a href="privacy-policy.html">Privacy Policy</a>.</p>
+      <div class="cookie-banner__actions">
+        <button class="btn btn--primary btn--sm cookie-accept">Accept</button>
+        <button class="btn btn--outline btn--sm cookie-decline">Decline</button>
+      </div>
+    </div>
+  </div>
+  <script src="assets/js/main.js" defer></script>
+</body>
+</html>

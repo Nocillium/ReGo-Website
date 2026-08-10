@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | iGo ReGo</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+  <script src="site.config.js" defer></script>
+</head>
+<body>
+  <main class="section">
+    <div class="container" style="max-width: 680px;">
+      <div class="section__header">
+        <span class="section__label">Welcome Back</span>
+        <h1 class="section__title">Log in to iGo ReGo</h1>
+        <p class="section__subtitle">Sign in to continue to your dashboard, manage appointments, and complete booking with Shopmonkey.</p>
+      </div>
+
+      <form id="login-form" class="auth-form" novalidate>
+        <div class="form-group">
+          <label for="login-email">Email address <span class="required">*</span></label>
+          <input id="login-email" name="email" type="email" required autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label for="login-password">Password <span class="required">*</span></label>
+          <input id="login-password" name="password" type="password" required autocomplete="current-password">
+        </div>
+
+        <div class="form__error" role="alert" aria-live="assertive"></div>
+
+        <button type="submit" class="btn btn--primary">Log In</button>
+      </form>
+
+      <p style="margin-top: 1.5rem;">New to iGo ReGo? <a href="signup.html">Create an account</a> to register and use Shopmonkey booking.</p>
+    </div>
+  </main>
+
+  <script src="assets/js/main.js" defer></script>
+</body>
+</html>

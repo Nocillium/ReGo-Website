@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book an Appointment | iGo ReGo</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+  <script src="site.config.js" defer></script>
+</head>
+<body>
+  <header class="header" role="banner">
+    <div class="container header__inner">
+      <a href="index.html" class="logo" aria-label="iGo ReGo Home">
+        <img src="assets/images/logo.svg" alt="iGo ReGo logo" class="logo__icon">
+        <span class="logo__text">iGo <span class="logo__accent">ReGo</span></span>
+      </a>
+      <nav class="nav" aria-label="Main navigation">
+        <ul class="nav__list">
+          <li><a href="index.html" class="nav__link">Home</a></li>
+          <li><a href="fleet-services.html" class="nav__link">Fleet Services</a></li>
+          <li><a href="contact.html" class="nav__link">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="header__actions">
+        <a href="index.html" class="btn btn--secondary btn--sm">Back to Home</a>
+      </div>
+      <button class="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile navigation">
+    <ul class="mobile-nav__list">
+      <li><a href="index.html" class="mobile-nav__link">Home</a></li>
+      <li><a href="fleet-services.html" class="mobile-nav__link">Fleet Services</a></li>
+      <li><a href="contact.html" class="mobile-nav__link">Contact</a></li>
+    </ul>
+    <div class="mobile-nav__actions">
+      <a href="index.html" class="btn btn--secondary">Back to Home</a>
+      <a href="tel:+15551234567" class="btn btn--primary" data-track="phone">Call (555) 123-4567</a>
+    </div>
+  </nav>
+
+  <main class="section">
+    <div class="container" style="max-width: 760px;">
+      <div class="section__header">
+        <span class="section__label">Appointment Booking</span>
+        <h1 class="section__title">Book your appointment</h1>
+        <p class="section__subtitle">Logged-in customers can request a service appointment directly through Shopmonkey. Fill out the details below and we will follow up to confirm availability.</p>
+      </div>
+
+      <form id="appointment-form" class="auth-form" novalidate>
+        <div class="form-group">
+          <label for="appointment-first-name">First name <span class="required">*</span></label>
+          <input id="appointment-first-name" name="firstName" type="text" required autocomplete="given-name">
+        </div>
+
+        <div class="form-group">
+          <label for="appointment-last-name">Last name <span class="required">*</span></label>
+          <input id="appointment-last-name" name="lastName" type="text" required autocomplete="family-name">
+        </div>
+
+        <div class="form-group">
+          <label for="appointment-email">Email address <span class="required">*</span></label>
+          <input id="appointment-email" name="email" type="email" required autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label for="appointment-phone">Phone number <span class="required">*</span></label>
+          <input id="appointment-phone" name="phone" type="tel" required autocomplete="tel">
+        </div>
+
+        <div class="form-group">
+          <label for="appointment-company">Company name</label>
+          <input id="appointment-company" name="companyName" type="text" autocomplete="organization">
+        </div>
+
+        <div class="form-group">
+          <label for="service-type">Service needed</label>
+          <select id="service-type" name="serviceType">
+            <option value="">Select a service</option>
+            <option value="Oil Change">Oil Change</option>
+            <option value="Brake Service">Brake Service</option>
+            <option value="Tire Service">Tire Service</option>
+            <option value="Engine Diagnostics">Engine Diagnostics</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="preferredDate">Preferred service date</label>
+          <input id="preferredDate" name="preferredDate" type="date">
+        </div>
+
+        <div class="form-group">
+          <label for="preferredTime">Preferred service time</label>
+          <select id="preferredTime" name="preferredTime">
+            <option value="">--:-- --</option>
+            <option value="06:00">6:00 AM</option>
+            <option value="07:00">7:00 AM</option>
+            <option value="08:00">8:00 AM</option>
+            <option value="09:00">9:00 AM</option>
+            <option value="10:00">10:00 AM</option>
+            <option value="11:00">11:00 AM</option>
+            <option value="12:00">12:00 PM</option>
+            <option value="13:00">1:00 PM</option>
+            <option value="14:00">2:00 PM</option>
+            <option value="15:00">3:00 PM</option>
+            <option value="16:00">4:00 PM</option>
+            <option value="17:00">5:00 PM</option>
+            <option value="18:00">6:00 PM</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="vehicleDetails">Vehicle details <span class="required">*</span></label>
+          <input id="vehicleDetails" name="vehicleDetails" type="text" placeholder="e.g. 2018 Honda Civic" autocomplete="off" required>
+        </div>
+
+        <div class="form-group">
+          <label for="notes">Notes</label>
+          <textarea id="notes" name="notes" rows="4" placeholder="Additional details or requests"></textarea>
+        </div>
+
+        <input type="hidden" name="customerType" value="Customer">
+
+        <div class="form__error" role="alert" aria-live="assertive"></div>
+        <div class="form__success" role="status" aria-live="polite">Your appointment request has been submitted. We will contact you shortly to confirm details.</div>
+
+        <button type="submit" class="btn btn--primary">Request Appointment</button>
+      </form>
+    </div>
+  </main>
+
+  <script src="assets/js/main.js" defer></script>
+</body>
+</html>

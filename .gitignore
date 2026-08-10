@@ -1,0 +1,15 @@
+# Node / build artifacts
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vercel and local environment
+.vercel/
+.env
+.env.local
+.env.development
+.env.production
+
+# Dependency directories
+.DS_Store
