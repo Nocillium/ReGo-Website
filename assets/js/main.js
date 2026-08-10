@@ -100,6 +100,10 @@
     if (errorEl) errorEl.remove();
   }
 
+  function getFullName(firstName, lastName) {
+    return [firstName, lastName].filter(Boolean).join(' ').trim();
+  }
+
   const SUPABASE_CLIENT = window.supabase && SITE_CONFIG.supabaseUrl && SITE_CONFIG.supabaseAnonKey
     ? window.supabase.createClient(SITE_CONFIG.supabaseUrl, SITE_CONFIG.supabaseAnonKey)
     : null;
@@ -469,6 +473,199 @@
     }
   }
 
+  function createCustomerRegistrationModal() {
+    const existingModal = document.getElementById('customer-registration-modal');
+    if (existingModal) {
+      return existingModal;
+    }
+
+    const modal = document.createElement('div');
+    modal.id = 'customer-registration-modal';
+    modal.className = 'modal';
+    modal.setAttribute('aria-hidden', 'true');
+    modal.innerHTML = `
+      <div class="modal__backdrop" data-modal-close></div>
+      <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="customer-registration-title">
+        <div class="modal__header">
+          <div>
+            <h2 class="modal__title" id="customer-registration-title">Register customer</h2>
+            <p class="modal__subtitle">Shopmonkey could not find this customer. Register them first, then we will retry the booking automatically.</p>
+          </div>
+          <button type="button" class="modal__close" aria-label="Close customer registration" data-modal-close>&times;</button>
+        </div>
+
+        <form id="customer-registration-form" novalidate>
+          <div class="modal__grid">
+            <div class="form-group">
+              <label for="customer-registration-first-name">First name <span class="required">*</span></label>
+              <input id="customer-registration-first-name" name="firstName" type="text" required autocomplete="given-name">
+            </div>
+            <div class="form-group">
+              <label for="customer-registration-last-name">Last name <span class="required">*</span></label>
+              <input id="customer-registration-last-name" name="lastName" type="text" required autocomplete="family-name">
+            </div>
+            <div class="form-group">
+              <label for="customer-registration-email">Email address <span class="required">*</span></label>
+              <input id="customer-registration-email" name="email" type="email" required autocomplete="email">
+            </div>
+            <div class="form-group">
+              <label for="customer-registration-phone">Phone number <span class="required">*</span></label>
+              <input id="customer-registration-phone" name="phone" type="tel" required autocomplete="tel">
+            </div>
+            <div class="form-group">
+              <label for="customer-registration-company">Company name</label>
+              <input id="customer-registration-company" name="companyName" type="text" autocomplete="organization">
+            </div>
+          </div>
+
+          <div class="form__error" role="alert" aria-live="assertive"></div>
+          <p class="modal__hint">This will create the Shopmonkey customer record and then continue with your appointment.</p>
+
+          <div class="modal__actions">
+            <button type="submit" class="btn btn--primary">Register customer and continue</button>
+            <button type="button" class="btn btn--outline-dark" data-modal-close>Cancel</button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    const closeModal = () => {
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+    };
+
+    modal.querySelectorAll('[data-modal-close]').forEach((button) => {
+      button.addEventListener('click', closeModal);
+    });
+
+    modal.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
+
+    modal._close = closeModal;
+    return modal;
+  }
+
+  function openCustomerRegistrationModal(customerDetails, onRegistered) {
+    const modal = createCustomerRegistrationModal();
+    const form = modal.querySelector('#customer-registration-form');
+    const firstNameInput = form.querySelector('[name="firstName"]');
+    const lastNameInput = form.querySelector('[name="lastName"]');
+    const emailInput = form.querySelector('[name="email"]');
+    const phoneInput = form.querySelector('[name="phone"]');
+    const companyInput = form.querySelector('[name="companyName"]');
+    const submitButton = form.querySelector('button[type="submit"]');
+    const errorEl = form.querySelector('.form__error');
+
+    firstNameInput.value = customerDetails.firstName || '';
+    lastNameInput.value = customerDetails.lastName || '';
+    emailInput.value = customerDetails.email || '';
+    phoneInput.value = customerDetails.phone || '';
+    companyInput.value = customerDetails.companyName || '';
+    errorEl.textContent = '';
+    errorEl.classList.remove('is-visible');
+
+    const closeModal = modal._close;
+
+    const handleSubmit = async (event) => {
+      event.preventDefault();
+
+      const firstName = firstNameInput.value.trim();
+      const lastName = lastNameInput.value.trim();
+      const email = emailInput.value.trim();
+      const phone = phoneInput.value.trim();
+      const companyName = companyInput.value.trim();
+
+      [firstNameInput, lastNameInput, emailInput, phoneInput].forEach((field) => clearFieldError(field));
+
+      let isValid = true;
+      if (!firstName) {
+        showFieldError(firstNameInput, 'Please enter a first name.');
+        isValid = false;
+      }
+      if (!lastName) {
+        showFieldError(lastNameInput, 'Please enter a last name.');
+        isValid = false;
+      }
+      if (!validateEmail(email)) {
+        showFieldError(emailInput, 'Please enter a valid email address.');
+        isValid = false;
+      }
+      if (!validatePhone(phone)) {
+        showFieldError(phoneInput, 'Please enter a valid phone number.');
+        isValid = false;
+      }
+
+      if (!isValid) {
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = 'Registering...';
+
+      try {
+        const response = await fetch('/api/customer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            firstName,
+            lastName,
+            email,
+            phone,
+            companyName,
+            customerType: customerDetails.customerType || 'Customer',
+          }),
+        });
+
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || 'Unable to register customer.');
+        }
+
+        const customerId = result.data?.id || result.data?.customerId || null;
+        setStoredAuth({
+          ...(getStoredAuth() || {}),
+          email,
+          name: getFullName(firstName, lastName),
+          firstName,
+          lastName,
+          phone,
+          companyName,
+          customerId,
+        });
+
+        closeModal();
+        if (typeof onRegistered === 'function') {
+          await onRegistered({ customerId });
+        }
+      } catch (error) {
+        errorEl.textContent = error.message || 'Unable to register customer.';
+        errorEl.classList.add('is-visible');
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Register customer and continue';
+      }
+    };
+
+    form.removeEventListener('submit', form._submitHandler);
+    form._submitHandler = handleSubmit;
+    form.addEventListener('submit', handleSubmit);
+
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    firstNameInput.focus();
+
+    return modal;
+  }
+
   async function submitAppointmentForm(form) {
     const formData = new FormData(form);
     const auth = getStoredAuth();
@@ -590,7 +787,7 @@
       errorEl.textContent = '';
     }
 
-    try {
+    const postAppointmentData = async (appointmentData) => {
       if (!CONFIG.shopmonkeyApiUrl) {
         throw new Error('Booking API configuration is missing. Please set the API URL.');
       }
@@ -600,7 +797,7 @@
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(appointmentData),
       });
 
       const result = await response.json();
@@ -611,7 +808,48 @@
       }
 
       return result;
+    };
+
+    const showAppointmentSuccess = () => {
+      const successEl = form.querySelector('.form__success');
+      if (successEl) {
+        form.querySelectorAll('input, textarea, select').forEach((input) => {
+          if (input.type !== 'hidden') {
+            input.value = '';
+          }
+        });
+        successEl.classList.add('is-visible');
+        successEl.setAttribute('tabindex', '-1');
+        successEl.focus();
+      }
+    };
+
+    try {
+      return await postAppointmentData(data);
     } catch (error) {
+      if (error?.message && /customer not found/i.test(error.message)) {
+        openCustomerRegistrationModal(
+          { firstName, lastName, email, phone, companyName, customerType },
+          async () => {
+            const retryAuth = getStoredAuth();
+            const retryCustomerId = retryAuth?.customerId || null;
+            const retryData = {
+              ...data,
+              customerId: retryCustomerId,
+              customer: {
+                ...customer,
+                id: retryCustomerId,
+              },
+            };
+
+            await postAppointmentData(retryData);
+            showAppointmentSuccess();
+            return null;
+          }
+        );
+        return { deferred: true };
+      }
+
       if (errorEl) {
         errorEl.textContent = error.message;
         errorEl.classList.add('is-visible');
@@ -657,10 +895,18 @@
       }
 
       try {
-        await submitAppointmentForm(form);
+        const result = await submitAppointmentForm(form);
+        if (result && result.deferred) {
+          return;
+        }
+
         const successEl = form.querySelector('.form__success');
         if (successEl) {
-          form.querySelectorAll('input').forEach((input) => input.value = '');
+          form.querySelectorAll('input, textarea, select').forEach((input) => {
+            if (input.type !== 'hidden') {
+              input.value = '';
+            }
+          });
           successEl.classList.add('is-visible');
           successEl.setAttribute('tabindex', '-1');
           successEl.focus();

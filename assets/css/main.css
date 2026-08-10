@@ -975,6 +975,106 @@ ul {
   display: block;
 }
 
+/* Appointment customer registration modal */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal.is-open {
+  display: flex;
+}
+
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(13, 13, 13, 0.62);
+}
+
+.modal__dialog {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 640px);
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  background: var(--white);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  padding: 1.5rem;
+}
+
+.modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.modal__title {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--black);
+  margin-bottom: 0.35rem;
+}
+
+.modal__subtitle {
+  color: var(--gray-600);
+}
+
+.modal__close {
+  border: 0;
+  background: transparent;
+  color: var(--gray-600);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.modal__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.modal__grid .form-group:last-child,
+.modal__grid .form-group:nth-last-child(2) {
+  grid-column: 1 / -1;
+}
+
+.modal__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.modal__hint {
+  font-size: 0.9375rem;
+  color: var(--gray-600);
+  margin-top: 0.5rem;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .modal__dialog {
+    padding: 1.25rem;
+  }
+
+  .modal__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .form__success svg {
   color: #10b981;
   margin-bottom: 1rem;
