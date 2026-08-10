@@ -104,6 +104,8 @@
     ? window.supabase.createClient(SITE_CONFIG.supabaseUrl, SITE_CONFIG.supabaseAnonKey)
     : null;
 
+  const AUTH_SESSION_KEY = 'regoAuth';
+
   let currentAuthUser = null;
   let authStateLoaded = false;
   let authStatePromise = null;
@@ -131,6 +133,21 @@
   }
 
   function getStoredAuth() {
+    if (currentAuthUser) {
+      return currentAuthUser;
+    }
+
+    try {
+      const storedAuth = JSON.parse(localStorage.getItem(AUTH_SESSION_KEY) || 'null');
+      if (storedAuth) {
+        currentAuthUser = storedAuth;
+        authStateLoaded = true;
+        return currentAuthUser;
+      }
+    } catch {
+      // Ignore malformed stored auth and fall through to Supabase session lookup.
+    }
+
     return currentAuthUser;
   }
 
@@ -138,6 +155,13 @@
     currentAuthUser = user ? { ...user } : null;
     authStateLoaded = true;
     authStatePromise = Promise.resolve(currentAuthUser);
+
+    if (currentAuthUser) {
+      localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(currentAuthUser));
+    } else {
+      localStorage.removeItem(AUTH_SESSION_KEY);
+    }
+
     return currentAuthUser;
   }
 
@@ -145,6 +169,7 @@
     currentAuthUser = null;
     authStateLoaded = false;
     authStatePromise = null;
+    localStorage.removeItem(AUTH_SESSION_KEY);
 
     if (SUPABASE_CLIENT) {
       await SUPABASE_CLIENT.auth.signOut();
@@ -154,6 +179,12 @@
   async function loadAuthState() {
     if (authStateLoaded) {
       return currentAuthUser;
+    }
+
+    const storedAuth = getStoredAuth();
+    if (storedAuth) {
+      authStateLoaded = true;
+      return storedAuth;
     }
 
     if (!SUPABASE_CLIENT) {
@@ -268,7 +299,10 @@
           setStoredAuth(mapSupabaseUser(data.user));
           window.location.replace('index.html');
         } catch (error) {
-          showFieldError(passwordInput, error.message || 'Email or password is incorrect.');
+          const details = [error?.message, error?.status ? `status ${error.status}` : '', error?.code ? `code ${error.code}` : '']
+            .filter(Boolean)
+            .join(' ');
+          showFieldError(passwordInput, details || 'Email or password is incorrect.');
         }
       });
     }
