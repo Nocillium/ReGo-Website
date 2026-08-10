@@ -418,7 +418,12 @@
               const result = await response.json();
               if (result.success) {
                 customerId = result.data?.id || result.data?.customerId || customerId;
+              } else if (result?.message) {
+                throw new Error(result.message);
               }
+            } else {
+              const result = await response.json().catch(() => null);
+              throw new Error(result?.message || 'Unable to create the Shopmonkey customer record.');
             }
 
             const { data: updatedUser, error: updateError } = await SUPABASE_CLIENT.auth.updateUser({
@@ -441,11 +446,11 @@
               });
             }
           } catch (customerError) {
-            console.warn('Customer provisioning skipped:', customerError);
-            setStoredAuth({
-              ...signedUpUser,
-              customerId,
-            });
+            if (formError) {
+              formError.textContent = customerError.message || 'Unable to create the Shopmonkey customer record.';
+              formError.classList.add('is-visible');
+            }
+            throw customerError;
           }
 
           window.location.replace('index.html');
@@ -478,8 +483,10 @@
     const vehicleDetails = (formData.get('vehicleDetails') || '').toString().trim();
     const notes = (formData.get('notes') || '').toString().trim();
     const customerType = (formData.get('customerType') || 'Customer').toString().trim();
+    const customerName = [firstName, lastName].filter(Boolean).join(' ').trim();
 
     const customer = {
+      name: customerName,
       firstName,
       lastName,
       companyName,
@@ -488,8 +495,40 @@
       phoneNumbers: phone ? [{ number: phone }] : [],
     };
 
-    if (auth?.customerId) {
-      customer.id = auth.customerId;
+    let customerId = auth?.customerId || null;
+
+    if (!customerId) {
+      const customerResponse = await fetch('/api/customer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          phone,
+          companyName,
+          customerType,
+        }),
+      });
+
+      const customerResult = await customerResponse.json();
+      if (!customerResponse.ok || !customerResult.success) {
+        throw new Error(customerResult.message || 'Unable to create the Shopmonkey customer record.');
+      }
+
+      customerId = customerResult.data?.id || customerResult.data?.customerId || null;
+
+      if (customerId) {
+        customer.id = customerId;
+        setStoredAuth({
+          ...auth,
+          customerId,
+        });
+      }
+    } else {
+      customer.id = customerId;
     }
 
     let startDate = new Date();
@@ -509,8 +548,21 @@
           ? `${firstName} ${lastName}`.trim() + ` - ${serviceType}`
           : `${firstName} ${lastName}`.trim() || 'Appointment Request';
 
+    const vehicle = {
+      name: vehicleDetails,
+      description: vehicleDetails,
+    };
+
+    const order = {
+      name: computedName,
+      title: computedName,
+      notes,
+      serviceType,
+    };
+
     const data = {
       name: computedName,
+      title: computedName,
       startDate: startDate.toISOString(),
       endDate: new Date(startDate.getTime() + 60 * 60 * 1000).toISOString(),
       color: 'blue',
@@ -520,8 +572,14 @@
       sendReminder: true,
       origin: 'AppointmentScheduler',
       customerType,
-      customerId: auth?.customerId,
+      customerId,
+      customerName,
       customer,
+      vehicle,
+      vehicleName: vehicleDetails,
+      vehicleDetails,
+      order,
+      orderName: computedName,
       serviceType,
       notes: notes,
     };

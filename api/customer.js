@@ -6,17 +6,16 @@ export default async function handler(req, res) {
 
   const {
     SHOPMONKEY_API_TOKEN,
-    SHOPMONKEY_API_URL,
     SHOPMONKEY_CUSTOMER_URL,
     SHOPMONKEY_LOCATION_ID,
   } = process.env;
 
-  const customerUrl = SHOPMONKEY_CUSTOMER_URL || (SHOPMONKEY_API_URL ? SHOPMONKEY_API_URL.replace(/\/appointment\/?$/, '/customer') : null);
+  const customerUrl = SHOPMONKEY_CUSTOMER_URL;
 
   if (!SHOPMONKEY_API_TOKEN || !customerUrl) {
     return res.status(500).json({
       success: false,
-      message: 'Server customer configuration is missing. Set SHOPMONKEY_API_TOKEN and SHOPMONKEY_CUSTOMER_URL or SHOPMONKEY_API_URL.',
+      message: 'Server customer configuration is missing. Set SHOPMONKEY_API_TOKEN and SHOPMONKEY_CUSTOMER_URL.',
     });
   }
 
