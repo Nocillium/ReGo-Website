@@ -300,9 +300,37 @@ ul {
   gap: 1rem;
 }
 
+.header__auth {
+  display: flex;
+  align-items: center;
+}
+
 .header__signin {
   box-shadow: 0 10px 24px rgba(196, 30, 58, 0.22);
   font-weight: 700;
+}
+
+.header__user-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c41e3a, #8d132b);
+  color: var(--white);
+  box-shadow: 0 10px 24px rgba(196, 30, 58, 0.22);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.header__user-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(196, 30, 58, 0.28);
+}
+
+.header__user-icon {
+  width: 18px;
+  height: 18px;
 }
 
 .header__phone {

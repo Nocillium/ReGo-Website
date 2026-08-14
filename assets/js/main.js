@@ -923,8 +923,32 @@
     });
   }
 
+  function renderHeaderAuth() {
+    const authTarget = document.getElementById('header-auth');
+    if (!authTarget) {
+      return;
+    }
+
+    const authUser = getStoredAuth();
+
+    if (authUser) {
+      authTarget.innerHTML = `
+        <a href="login.html" class="header__user-button" aria-label="Open account" title="Account">
+          <svg class="header__user-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 21a8 8 0 10-16 0"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </a>
+      `;
+      return;
+    }
+
+    authTarget.innerHTML = '<a href="login.html" class="btn btn--primary btn--sm header__signin">Sign In</a>';
+  }
+
   async function bootstrapAuth() {
     await loadAuthState();
+    renderHeaderAuth();
 
     const appointmentForm = document.getElementById('appointment-form');
     if (appointmentForm) {
