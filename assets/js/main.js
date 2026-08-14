@@ -1103,12 +1103,30 @@
       return;
     }
 
+    const mobileSigninLink = document.querySelector('.mobile-nav__actions a[href="login.html"]');
+
     if (!authUser) {
       signinLink.hidden = false;
+      signinLink.style.display = '';
+      signinLink.setAttribute('aria-hidden', 'false');
+
+      if (mobileSigninLink) {
+        mobileSigninLink.hidden = false;
+        mobileSigninLink.style.display = '';
+        mobileSigninLink.setAttribute('aria-hidden', 'false');
+      }
       return;
     }
 
     signinLink.hidden = true;
+    signinLink.style.display = 'none';
+    signinLink.setAttribute('aria-hidden', 'true');
+
+    if (mobileSigninLink) {
+      mobileSigninLink.hidden = true;
+      mobileSigninLink.style.display = 'none';
+      mobileSigninLink.setAttribute('aria-hidden', 'true');
+    }
 
     const userPanel = document.createElement('div');
     userPanel.id = 'header-user-panel';
