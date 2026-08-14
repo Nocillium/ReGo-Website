@@ -300,6 +300,11 @@ ul {
   gap: 1rem;
 }
 
+.header__signin {
+  box-shadow: 0 10px 24px rgba(196, 30, 58, 0.22);
+  font-weight: 700;
+}
+
 .header__phone {
   display: flex;
   align-items: center;
@@ -468,6 +473,10 @@ ul {
   flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 2rem;
+}
+
+.hero__actions .btn {
+  min-width: 220px;
 }
 
 .hero__trust {
