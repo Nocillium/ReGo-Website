@@ -1175,11 +1175,18 @@
     if (!user) {
       return 'Account';
     }
-    if (user.name) {
-      return user.name;
+    if (user.firstName) {
+      return user.firstName;
     }
-    if (user.firstName || user.lastName) {
-      return [user.firstName, user.lastName].filter(Boolean).join(' ').trim();
+    if (user.first_name) {
+      return user.first_name;
+    }
+    if (user.name) {
+      const parts = user.name.split(' ');
+      return parts[0] || 'Account';
+    }
+    if (user.lastName) {
+      return user.lastName;
     }
     if (user.email) {
       return user.email.split('@')[0];
@@ -1193,58 +1200,86 @@
       return;
     }
 
-    const authUser = getStoredAuth();
-
-    if (authUser) {
-      const displayName = getDisplayName(authUser);
-      authTarget.innerHTML = `
-        <div class="header__user-pill">
-          <span class="header__user-name">${displayName}</span>
-          <button type="button" class="header__user-button" aria-label="Open account menu" aria-expanded="false" title="Account menu">
-            <svg class="header__user-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M20 21a8 8 0 10-16 0"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-          </button>
-          <div class="header__user-menu" hidden>
-            <a href="signup.html?edit=1" class="header__user-menu-item">Edit Profile</a>
-            <button type="button" class="header__user-menu-item header__signout">Sign Out</button>
-          </div>
-        </div>
-      `;
-
-      const userButton = authTarget.querySelector('.header__user-button');
-      const userMenu = authTarget.querySelector('.header__user-menu');
-      const signOutButton = authTarget.querySelector('.header__signout');
-
-      if (userButton && userMenu) {
-        userButton.addEventListener('click', () => {
-          const isOpen = !userMenu.hidden;
-          userMenu.hidden = isOpen;
-          userButton.setAttribute('aria-expanded', String(!isOpen));
-        });
+    const signinLink = document.getElementById('header-signin');
+    const existingUserPanel = document.getElementById('header-user-panel');
+    const authUser = getStoredAuth() || (() => {
+      try {
+        const storedAuth = JSON.parse(localStorage.getItem(AUTH_SESSION_KEY) || 'null');
+        return storedAuth || null;
+      } catch {
+        return null;
       }
+    })();
 
-      if (signOutButton) {
-        signOutButton.addEventListener('click', async () => {
-          await clearAuth();
-          renderHeaderAuth();
-          window.location.href = 'index.html';
-        });
-      }
+    if (existingUserPanel) {
+      existingUserPanel.remove();
+    }
 
-      document.addEventListener('click', (event) => {
-        if (!authTarget.contains(event.target)) {
-          userMenu.hidden = true;
-          if (userButton) {
-            userButton.setAttribute('aria-expanded', 'false');
-          }
-        }
-      }, { once: true });
+    if (!signinLink) {
+      authTarget.innerHTML = '<a href="login.html" class="btn btn--primary btn--sm header__signin">Sign In</a>';
       return;
     }
 
-    authTarget.innerHTML = '<a href="login.html" class="btn btn--primary btn--sm header__signin">Sign In</a>';
+    if (!authUser) {
+      signinLink.hidden = false;
+      return;
+    }
+
+    signinLink.hidden = true;
+
+    const userPanel = document.createElement('div');
+    userPanel.id = 'header-user-panel';
+    userPanel.className = 'header__user-pill';
+
+    const userName = document.createElement('span');
+    userName.id = 'header-user-name';
+    userName.className = 'header__user-name';
+    userName.textContent = getDisplayName(authUser);
+
+    const userButton = document.createElement('button');
+    userButton.type = 'button';
+    userButton.className = 'header__user-button';
+    userButton.setAttribute('aria-label', 'Open account menu');
+    userButton.setAttribute('aria-expanded', 'false');
+    userButton.title = 'Account menu';
+    userButton.innerHTML = `
+      <svg class="header__user-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M20 21a8 8 0 10-16 0"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+    `;
+
+    const userMenu = document.createElement('div');
+    userMenu.className = 'header__user-menu';
+    userMenu.hidden = true;
+    userMenu.innerHTML = `
+      <a href="signup.html?edit=1" class="header__user-menu-item">Edit Profile</a>
+      <button type="button" class="header__user-menu-item header__signout">Sign Out</button>
+    `;
+
+    userPanel.appendChild(userName);
+    userPanel.appendChild(userButton);
+    userPanel.appendChild(userMenu);
+    authTarget.appendChild(userPanel);
+
+    userButton.addEventListener('click', () => {
+      const isOpen = !userMenu.hidden;
+      userMenu.hidden = isOpen;
+      userButton.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    userMenu.querySelector('.header__signout').addEventListener('click', async () => {
+      await clearAuth();
+      renderHeaderAuth();
+      window.location.href = 'index.html';
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!authTarget.contains(event.target)) {
+        userMenu.hidden = true;
+        userButton.setAttribute('aria-expanded', 'false');
+      }
+    }, { once: true });
   }
 
   async function bootstrapAuth() {
