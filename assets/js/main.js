@@ -220,14 +220,11 @@
   }
 
   function isProtectedPage() {
-    const pathname = window.location.pathname;
-    return pathname === '/' || pathname.endsWith('/index.html') || pathname.endsWith('/appointment.html');
+    return false;
   }
 
   function ensureProtectedPage() {
-    if (isProtectedPage() && !getStoredAuth()) {
-      window.location.replace('login.html');
-    }
+    // Auth is optional, so we do not force redirects for guest visitors.
   }
 
   function redirectIfAuthenticated() {
