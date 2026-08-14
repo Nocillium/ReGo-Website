@@ -268,6 +268,254 @@
   async function initializeAuthPages() {
     redirectIfAuthenticated();
 
+    const signupForm = document.getElementById('signup-form');
+    const isEditProfileMode = new URLSearchParams(window.location.search).get('edit') === '1';
+    const currentUser = getStoredAuth();
+
+    if (signupForm) {
+      if (isEditProfileMode && currentUser) {
+        const firstNameInput = signupForm.querySelector('[name="firstName"]');
+        const lastNameInput = signupForm.querySelector('[name="lastName"]');
+        const emailInput = signupForm.querySelector('[name="email"]');
+        const phoneInput = signupForm.querySelector('[name="phone"]');
+        const companyInput = signupForm.querySelector('[name="companyName"]');
+        const submitButton = signupForm.querySelector('button[type="submit"]');
+        const headerLabel = signupForm.closest('.container')?.querySelector('.section__label');
+        const pageTitle = signupForm.closest('.container')?.querySelector('.section__title');
+
+        if (firstNameInput) firstNameInput.value = currentUser.firstName || '';
+        if (lastNameInput) lastNameInput.value = currentUser.lastName || '';
+        if (emailInput) {
+          emailInput.value = currentUser.email || '';
+          emailInput.setAttribute('readonly', 'readonly');
+        }
+        if (phoneInput) phoneInput.value = currentUser.phone || '';
+        if (companyInput) companyInput.value = currentUser.companyName || '';
+        if (submitButton) submitButton.textContent = 'Save Changes';
+        if (headerLabel) headerLabel.textContent = 'Edit your profile';
+        if (pageTitle) pageTitle.textContent = 'Update your iGo ReGo profile';
+      }
+
+      signupForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        if (isEditProfileMode) {
+          const firstNameInput = signupForm.querySelector('[name="firstName"]');
+          const lastNameInput = signupForm.querySelector('[name="lastName"]');
+          const phoneInput = signupForm.querySelector('[name="phone"]');
+          const companyInput = signupForm.querySelector('[name="companyName"]');
+          const formError = signupForm.querySelector('.form__error');
+
+          const firstName = firstNameInput.value.trim();
+          const lastName = lastNameInput.value.trim();
+          const phone = phoneInput.value.trim();
+          const companyName = companyInput ? companyInput.value.trim() : '';
+
+          if (!firstName || !lastName) {
+            showFieldError(firstNameInput, !firstName ? 'Please enter your first name.' : 'Please enter your last name.');
+            if (lastNameInput && !lastName) showFieldError(lastNameInput, 'Please enter your last name.');
+            return;
+          }
+          if (!phone || !validatePhone(phone)) {
+            showFieldError(phoneInput, 'Please enter a valid phone number.');
+            return;
+          }
+
+          try {
+            if (!SUPABASE_CLIENT) {
+              throw new Error('Supabase auth is not configured yet. Add your project URL and anon key in site.config.js.');
+            }
+
+            const { data, error } = await SUPABASE_CLIENT.auth.updateUser({
+              data: {
+                first_name: firstName,
+                last_name: lastName,
+                phone,
+                company_name: companyName,
+              },
+            });
+
+            if (error) {
+              throw error;
+            }
+
+            const mergedUser = { ...getStoredAuth(), ...mapSupabaseUser(data.user) };
+            setStoredAuth(mergedUser);
+            renderHeaderAuth();
+
+            if (formError) {
+              formError.textContent = 'Profile updated successfully.';
+              formError.classList.add('is-visible');
+            }
+            window.setTimeout(() => {
+              window.location.href = 'index.html';
+            }, 700);
+          } catch (error) {
+            if (formError) {
+              formError.textContent = error.message;
+              formError.classList.add('is-visible');
+            }
+          }
+          return;
+        }
+
+        const firstNameInput = signupForm.querySelector('[name="firstName"]');
+        const lastNameInput = signupForm.querySelector('[name="lastName"]');
+        const emailInput = signupForm.querySelector('[name="email"]');
+        const phoneInput = signupForm.querySelector('[name="phone"]');
+        const passwordInput = signupForm.querySelector('[name="password"]');
+        const companyInput = signupForm.querySelector('[name="companyName"]');
+
+        const firstName = firstNameInput.value.trim();
+        const lastName = lastNameInput.value.trim();
+        const email = emailInput.value.trim();
+        const phone = phoneInput.value.trim();
+        const password = passwordInput.value.trim();
+        const companyName = companyInput ? companyInput.value.trim() : '';
+
+        let isValid = true;
+        [firstNameInput, lastNameInput, emailInput, phoneInput, passwordInput].forEach((field) => clearFieldError(field));
+
+        if (!firstName) {
+          showFieldError(firstNameInput, 'Please enter your first name.');
+          isValid = false;
+        }
+        if (!lastName) {
+          showFieldError(lastNameInput, 'Please enter your last name.');
+          isValid = false;
+        }
+        if (!email || !validateEmail(email)) {
+          showFieldError(emailInput, 'Please enter a valid email address.');
+          isValid = false;
+        }
+        if (!phone || !validatePhone(phone)) {
+          showFieldError(phoneInput, 'Please enter a valid phone number.');
+          isValid = false;
+        }
+        if (!password || password.length < 6) {
+          showFieldError(passwordInput, 'Pick a password with at least 6 characters.');
+          isValid = false;
+        }
+
+        if (!isValid) {
+          return;
+        }
+
+        const formError = signupForm.querySelector('.form__error');
+        if (formError) {
+          formError.textContent = '';
+          formError.classList.remove('is-visible');
+        }
+
+        const submitButton = signupForm.querySelector('button[type="submit"]');
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.textContent = 'Creating account...';
+        }
+
+        try {
+          if (!SUPABASE_CLIENT) {
+            throw new Error('Supabase auth is not configured yet. Add your project URL and anon key in site.config.js.');
+          }
+
+          const { data, error } = await SUPABASE_CLIENT.auth.signUp({
+            email,
+            password,
+            options: {
+              data: {
+                first_name: firstName,
+                last_name: lastName,
+                phone,
+                company_name: companyName,
+              },
+            },
+          });
+
+          if (error) {
+            throw error;
+          }
+
+          const signedUpUser = mapSupabaseUser(data.user);
+
+          if (!data.session) {
+            if (formError) {
+              formError.textContent = 'Account created. Check your email to confirm your signup before logging in.';
+              formError.classList.add('is-visible');
+            }
+            return;
+          }
+
+          let customerId = signedUpUser.customerId;
+
+          try {
+            const response = await fetch('/api/customer', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                firstName,
+                lastName,
+                email,
+                phone,
+                companyName,
+              }),
+            });
+
+            if (response.ok) {
+              const result = await response.json();
+              if (result.success) {
+                customerId = result.data?.id || result.data?.customerId || customerId;
+              } else if (result?.message) {
+                throw new Error(result.message);
+              }
+            } else {
+              const result = await response.json().catch(() => null);
+              throw new Error(result?.message || 'Unable to create the Shopmonkey customer record.');
+            }
+
+            const { data: updatedUser, error: updateError } = await SUPABASE_CLIENT.auth.updateUser({
+              data: {
+                first_name: firstName,
+                last_name: lastName,
+                phone,
+                company_name: companyName,
+                customer_id: customerId,
+                shopmonkey_customer_id: customerId,
+              },
+            });
+
+            if (!updateError && updatedUser?.user) {
+              setStoredAuth(mapSupabaseUser(updatedUser.user));
+            } else {
+              setStoredAuth({
+                ...signedUpUser,
+                customerId,
+              });
+            }
+          } catch (customerError) {
+            if (formError) {
+              formError.textContent = customerError.message || 'Unable to create the Shopmonkey customer record.';
+              formError.classList.add('is-visible');
+            }
+            throw customerError;
+          }
+
+          window.location.replace('index.html');
+        } catch (error) {
+          if (formError) {
+            formError.textContent = error.message;
+            formError.classList.add('is-visible');
+          }
+        } finally {
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Create Account';
+          }
+        }
+      });
+    }
+
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
       loginForm.addEventListener('submit', async (event) => {
@@ -923,6 +1171,22 @@
     });
   }
 
+  function getDisplayName(user) {
+    if (!user) {
+      return 'Account';
+    }
+    if (user.name) {
+      return user.name;
+    }
+    if (user.firstName || user.lastName) {
+      return [user.firstName, user.lastName].filter(Boolean).join(' ').trim();
+    }
+    if (user.email) {
+      return user.email.split('@')[0];
+    }
+    return 'Account';
+  }
+
   function renderHeaderAuth() {
     const authTarget = document.getElementById('header-auth');
     if (!authTarget) {
@@ -932,14 +1196,51 @@
     const authUser = getStoredAuth();
 
     if (authUser) {
+      const displayName = getDisplayName(authUser);
       authTarget.innerHTML = `
-        <a href="login.html" class="header__user-button" aria-label="Open account" title="Account">
-          <svg class="header__user-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M20 21a8 8 0 10-16 0"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-        </a>
+        <div class="header__user-pill">
+          <span class="header__user-name">${displayName}</span>
+          <button type="button" class="header__user-button" aria-label="Open account menu" aria-expanded="false" title="Account menu">
+            <svg class="header__user-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 21a8 8 0 10-16 0"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </button>
+          <div class="header__user-menu" hidden>
+            <a href="signup.html?edit=1" class="header__user-menu-item">Edit Profile</a>
+            <button type="button" class="header__user-menu-item header__signout">Sign Out</button>
+          </div>
+        </div>
       `;
+
+      const userButton = authTarget.querySelector('.header__user-button');
+      const userMenu = authTarget.querySelector('.header__user-menu');
+      const signOutButton = authTarget.querySelector('.header__signout');
+
+      if (userButton && userMenu) {
+        userButton.addEventListener('click', () => {
+          const isOpen = !userMenu.hidden;
+          userMenu.hidden = isOpen;
+          userButton.setAttribute('aria-expanded', String(!isOpen));
+        });
+      }
+
+      if (signOutButton) {
+        signOutButton.addEventListener('click', async () => {
+          await clearAuth();
+          renderHeaderAuth();
+          window.location.href = 'index.html';
+        });
+      }
+
+      document.addEventListener('click', (event) => {
+        if (!authTarget.contains(event.target)) {
+          userMenu.hidden = true;
+          if (userButton) {
+            userButton.setAttribute('aria-expanded', 'false');
+          }
+        }
+      }, { once: true });
       return;
     }
 
