@@ -104,11 +104,32 @@
     return [firstName, lastName].filter(Boolean).join(' ').trim();
   }
 
-  const SUPABASE_CLIENT = window.supabase && SITE_CONFIG.supabaseUrl && SITE_CONFIG.supabaseAnonKey
+  const HAS_SUPABASE_CONFIG = Boolean(SITE_CONFIG.supabaseUrl && SITE_CONFIG.supabaseAnonKey);
+  const SUPABASE_CLIENT = window.supabase && HAS_SUPABASE_CONFIG
     ? window.supabase.createClient(SITE_CONFIG.supabaseUrl, SITE_CONFIG.supabaseAnonKey)
     : null;
 
   const AUTH_SESSION_KEY = 'regoAuth';
+
+  function showSupabaseStatus(message, form) {
+    const statusEl = form?.querySelector('[data-auth-status]') || document.querySelector('[data-auth-status]');
+    if (!statusEl) {
+      const banner = document.createElement('div');
+      banner.className = 'form__error is-visible';
+      banner.setAttribute('role', 'alert');
+      banner.setAttribute('data-auth-status', 'true');
+      banner.textContent = message;
+      if (form && form.parentNode) {
+        form.parentNode.insertBefore(banner, form);
+      } else {
+        document.body.insertBefore(banner, document.body.firstChild);
+      }
+      return;
+    }
+
+    statusEl.textContent = message;
+    statusEl.classList.add('is-visible');
+  }
 
   let currentAuthUser = null;
   let authStateLoaded = false;
@@ -268,7 +289,30 @@
   async function initializeAuthPages() {
     redirectIfAuthenticated();
 
+    const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
+
+    if (!SUPABASE_CLIENT || !window.supabase || !HAS_SUPABASE_CONFIG) {
+      const message = 'Supabase is not connected. Open the site through a local server and verify your project URL and anon key in site.config.js.';
+      if (loginForm) {
+        showSupabaseStatus(message, loginForm);
+        const submitButton = loginForm.querySelector('button[type="submit"]');
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.textContent = 'Supabase unavailable';
+        }
+      }
+      if (signupForm) {
+        showSupabaseStatus(message, signupForm);
+        const submitButton = signupForm.querySelector('button[type="submit"]');
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.textContent = 'Supabase unavailable';
+        }
+      }
+      return;
+    }
+
     const isEditProfileMode = new URLSearchParams(window.location.search).get('edit') === '1';
     const currentUser = getStoredAuth();
 
@@ -516,7 +560,6 @@
       });
     }
 
-    const loginForm = document.getElementById('login-form');
     if (loginForm) {
       loginForm.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -556,166 +599,6 @@
       });
     }
 
-    const signupForm = document.getElementById('signup-form');
-    if (signupForm) {
-      signupForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const firstNameInput = signupForm.querySelector('[name="firstName"]');
-        const lastNameInput = signupForm.querySelector('[name="lastName"]');
-        const emailInput = signupForm.querySelector('[name="email"]');
-        const phoneInput = signupForm.querySelector('[name="phone"]');
-        const passwordInput = signupForm.querySelector('[name="password"]');
-        const companyInput = signupForm.querySelector('[name="companyName"]');
-
-        const firstName = firstNameInput.value.trim();
-        const lastName = lastNameInput.value.trim();
-        const email = emailInput.value.trim();
-        const phone = phoneInput.value.trim();
-        const password = passwordInput.value.trim();
-        const companyName = companyInput ? companyInput.value.trim() : '';
-
-        let isValid = true;
-        [firstNameInput, lastNameInput, emailInput, phoneInput, passwordInput].forEach((field) => clearFieldError(field));
-
-        if (!firstName) {
-          showFieldError(firstNameInput, 'Please enter your first name.');
-          isValid = false;
-        }
-        if (!lastName) {
-          showFieldError(lastNameInput, 'Please enter your last name.');
-          isValid = false;
-        }
-        if (!email || !validateEmail(email)) {
-          showFieldError(emailInput, 'Please enter a valid email address.');
-          isValid = false;
-        }
-        if (!phone || !validatePhone(phone)) {
-          showFieldError(phoneInput, 'Please enter a valid phone number.');
-          isValid = false;
-        }
-        if (!password || password.length < 6) {
-          showFieldError(passwordInput, 'Pick a password with at least 6 characters.');
-          isValid = false;
-        }
-
-        if (!isValid) {
-          return;
-        }
-
-        const formError = signupForm.querySelector('.form__error');
-        if (formError) {
-          formError.textContent = '';
-          formError.classList.remove('is-visible');
-        }
-
-        const submitButton = signupForm.querySelector('button[type="submit"]');
-        if (submitButton) {
-          submitButton.disabled = true;
-          submitButton.textContent = 'Creating account...';
-        }
-
-        try {
-          if (!SUPABASE_CLIENT) {
-            throw new Error('Supabase auth is not configured yet. Add your project URL and anon key in site.config.js.');
-          }
-
-          const { data, error } = await SUPABASE_CLIENT.auth.signUp({
-            email,
-            password,
-            options: {
-              data: {
-                first_name: firstName,
-                last_name: lastName,
-                phone,
-                company_name: companyName,
-              },
-            },
-          });
-
-          if (error) {
-            throw error;
-          }
-
-          const signedUpUser = mapSupabaseUser(data.user);
-
-          if (!data.session) {
-            if (formError) {
-              formError.textContent = 'Account created. Check your email to confirm your signup before logging in.';
-              formError.classList.add('is-visible');
-            }
-            return;
-          }
-
-          let customerId = signedUpUser.customerId;
-
-          try {
-            const response = await fetch('/api/customer', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                firstName,
-                lastName,
-                email,
-                phone,
-                companyName,
-              }),
-            });
-
-            if (response.ok) {
-              const result = await response.json();
-              if (result.success) {
-                customerId = result.data?.id || result.data?.customerId || customerId;
-              } else if (result?.message) {
-                throw new Error(result.message);
-              }
-            } else {
-              const result = await response.json().catch(() => null);
-              throw new Error(result?.message || 'Unable to create the Shopmonkey customer record.');
-            }
-
-            const { data: updatedUser, error: updateError } = await SUPABASE_CLIENT.auth.updateUser({
-              data: {
-                first_name: firstName,
-                last_name: lastName,
-                phone,
-                company_name: companyName,
-                customer_id: customerId,
-                shopmonkey_customer_id: customerId,
-              },
-            });
-
-            if (!updateError && updatedUser?.user) {
-              setStoredAuth(mapSupabaseUser(updatedUser.user));
-            } else {
-              setStoredAuth({
-                ...signedUpUser,
-                customerId,
-              });
-            }
-          } catch (customerError) {
-            if (formError) {
-              formError.textContent = customerError.message || 'Unable to create the Shopmonkey customer record.';
-              formError.classList.add('is-visible');
-            }
-            throw customerError;
-          }
-
-          window.location.replace('index.html');
-        } catch (error) {
-          if (formError) {
-            formError.textContent = error.message;
-            formError.classList.add('is-visible');
-          }
-        } finally {
-          if (submitButton) {
-            submitButton.disabled = false;
-            submitButton.textContent = 'Create Account';
-          }
-        }
-      });
-    }
   }
 
   function createCustomerRegistrationModal() {
