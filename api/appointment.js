@@ -9,11 +9,17 @@ async function sendAppointmentEmail(appointment) {
     return;
   }
 
-  const fullName = [appointment?.firstName, appointment?.lastName].filter(Boolean).join(' ') || 'Customer';
-  const preferredDate = appointment?.preferredDate || 'Not specified';
+  const customer = appointment?.customer || {};
+  const firstName = appointment?.firstName || customer?.firstName || '';
+  const lastName = appointment?.lastName || customer?.lastName || '';
+  const email = appointment?.email || customer?.email || customer?.emails?.[0]?.email || 'N/A';
+  const phone = appointment?.phone || customer?.phone || customer?.phoneNumbers?.[0]?.number || 'N/A';
+  const fullName = [firstName, lastName].filter(Boolean).join(' ') || 'Customer';
+  const preferredDate = appointment?.preferredDate || appointment?.startDate || 'Not specified';
   const preferredTime = appointment?.preferredTime || 'Not specified';
   const serviceType = appointment?.serviceType || 'Not specified';
   const notes = appointment?.notes || 'No additional notes.';
+  const vehicleDetails = appointment?.vehicleDetails || appointment?.vehicle?.name || 'N/A';
 
   try {
     const response = await fetch('https://api.resend.com/emails', {
@@ -29,12 +35,12 @@ async function sendAppointmentEmail(appointment) {
         html: `
           <h2>New appointment request</h2>
           <p><strong>Name:</strong> ${fullName}</p>
-          <p><strong>Email:</strong> ${appointment?.email || 'N/A'}</p>
-          <p><strong>Phone:</strong> ${appointment?.phone || 'N/A'}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Phone:</strong> ${phone}</p>
           <p><strong>Service:</strong> ${serviceType}</p>
           <p><strong>Preferred date:</strong> ${preferredDate}</p>
           <p><strong>Preferred time:</strong> ${preferredTime}</p>
-          <p><strong>Vehicle details:</strong> ${appointment?.vehicleDetails || 'N/A'}</p>
+          <p><strong>Vehicle details:</strong> ${vehicleDetails}</p>
           <p><strong>Notes:</strong> ${notes}</p>
         `,
       }),
